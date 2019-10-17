@@ -1,4 +1,5 @@
 library i18n_translator;
+
 ///
 /// Copyright (C) 2019 Andrious Solutions
 ///
