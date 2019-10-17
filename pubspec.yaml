@@ -1,6 +1,6 @@
 name: i18n_translator
 description: Allow you to translate your local terms to other languages
-version: 0.1.0
+version: 1.0.0
 author: Greg Perry <support@andrioussolutions.com>
 homepage: https://github.com/AndriousSolutions/i18n_translator
 repository: https://github.com/AndriousSolutions/i18n_translator

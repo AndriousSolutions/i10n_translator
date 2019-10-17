@@ -71,12 +71,13 @@ class I18n {
     // Already been called
     if (_I18n.file != null) return true;
 
-    // Process the parameters
+    // Assign the csv file if not already assigned
     if (_csvFile == null && csv != null && csv.trim().isNotEmpty) {
       _csvFile ??= csv.trim();
       if (_csvFile.indexOf("/") == 0) _csvFile = _csvFile.substring(1);
     }
 
+    // Assign the map if not already assigned
     if (map != null && map.isNotEmpty) _allValues ??= map;
 
     _I18n.init(_csvFile);
@@ -117,8 +118,6 @@ class I18n {
 
   static List<Locale> get supportedLocales =>
       _locales.expand((e) => [Locale(e)]).toList();
-
-//  static I18n of(BuildContext context) => Localizations.of<I18n>(context, I18n);
 
   /// Supply a Text object for the translation.
   static Text t(
@@ -179,11 +178,11 @@ class I18n {
   }
 
   /// Three properties traditionally found in the Locale object.
-  String get languageCode => _locale.languageCode;
+  String get languageCode => _locale?.languageCode;
 
-  String get countryCode => _locale.countryCode;
+  String get countryCode => _locale?.countryCode;
 
-  int get hashCode => _locale.hashCode;
+  int get hashCode => _locale?.hashCode;
 }
 
 typedef fileFunc = List<String> Function(File file);
@@ -199,7 +198,7 @@ class _I18n {
   static Future<bool> init(String csvFile) async {
     // Already been called
     if (file != null) return true;
-
+    // Process the parameter
     if (csvFile == null || csvFile.trim().isEmpty) return false;
 
     String path;
@@ -396,19 +395,14 @@ class _I18n {
     return file;
   }
 
-  static void logError(String text) => print("[ERROR] $text\n\n");
-
-  static void log(String text) => print("[PROGRESS] $text\n");
+  static void logError(String text) => print("[I18N ERROR] $text\n\n");
 }
 
 class I18nDelegate extends LocalizationsDelegate<I18n> {
   // No need for more than one instance.
-  factory I18nDelegate() {
-    _this ??= I18nDelegate._();
-    return _this;
-  }
-  I18nDelegate._();
+  factory I18nDelegate() => _this ??= I18nDelegate._();
   static I18nDelegate _this;
+  I18nDelegate._();
 
   static Locale _locale;
   static bool _reload = false;
