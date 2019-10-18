@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:i18n_translator/i18n_translator.dart';
+import 'package:i10n_translator/i10n_translator.dart';
 
 void main() {
 //  test('adds one to input values', () {

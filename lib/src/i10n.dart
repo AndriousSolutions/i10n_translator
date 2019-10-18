@@ -1,4 +1,4 @@
-library i18n_translator;
+library i10n_translator;
 
 ///
 /// Copyright (C) 2019 Andrious Solutions
@@ -46,19 +46,20 @@ import 'package:csv/csv.dart' show CsvToListConverter;
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory, getTemporaryDirectory;
 
-import 'i18n_translator.dart' show RESERVED_WORDS;
+import 'i10n_translator.dart' show RESERVED_WORDS;
 
-class I18n {
-  factory I18n() => _this ??= I18n._();
-  static I18n _this;
-  I18n._();
+class I10n {
+  factory I10n() => _this ??= I10n._();
+  static I10n _this;
+  I10n._();
 
   static String _csvFile;
   static String get csvFile {
-    if (_csvFile == null || _csvFile.isEmpty) _csvFile = "assets/i18n/i18n.csv";
+    if (_csvFile == null || _csvFile.isEmpty) _csvFile = "assets/i10n/i10n.csv";
     return _csvFile;
   }
 
+  static Exception _ex;
   static Locale _locale;
   static Map<String, String> _localizedValues;
   static bool _useKey = true;
@@ -69,7 +70,8 @@ class I18n {
   static Future<bool> init(
       {String csv, Map<String, Map<String, String>> map}) async {
     // Already been called
-    if (_I18n.file != null) return true;
+    if ((_allValues != null && _allValues.isNotEmpty) || _I10n.file != null)
+      return false;
 
     // Assign the csv file if not already assigned
     if (_csvFile == null && csv != null && csv.trim().isNotEmpty) {
@@ -80,22 +82,32 @@ class I18n {
     // Assign the map if not already assigned
     if (map != null && map.isNotEmpty) _allValues ??= map;
 
-    _I18n.init(_csvFile);
+    bool init = true;
 
-    bool load;
-    try {
-      load =
-          _allValues == null || _allValues.isEmpty ? await _I18n.load() : true;
-    } catch (ex) {
-      load = false;
+    if (_allValues == null || _allValues.isEmpty) {
+      // Open a csv file to place in entries.
+      _I10n.init(_csvFile);
+      try {
+        // Open an asset if any to read in the entries.
+        init = await _I10n.load();
+      } catch (ex) {
+        init = false;
+      }
     }
-    return load;
+
+    if (_allValues != null)
+      _locales ??= _allValues.keys.expand((e) => [e]).toList();
+
+    return init;
   }
 
-  static Future<bool> dispose() => _I18n.dispose();
+  static List<Locale> get supportedLocales =>
+      _locales == null ? null : _locales.expand((e) => [Locale(e)]).toList();
+
+  static Future<bool> dispose() => _I10n.dispose();
 
   /// Load the static Map object with the appropriate translations.
-  static Future<I18n> load(Locale locale) {
+  static Future<I10n> load(Locale locale) {
     _locale = locale;
 
     String code;
@@ -113,11 +125,8 @@ class I18n {
 
     _localizedValues = _useKey ? {} : _allValues[code];
 
-    return Future.value(I18n());
+    return Future.value(I10n());
   }
-
-  static List<Locale> get supportedLocales =>
-      _locales.expand((e) => [Locale(e)]).toList();
 
   /// Supply a Text object for the translation.
   static Text t(
@@ -162,13 +171,13 @@ class I18n {
         key = "null";
       }
 
-      if (_I18n.file != null &&
+      if (_I10n.file != null &&
           _useKey &&
           (_allValues == null || _allValues.isEmpty) &&
           _localizedValues != null &&
           _localizedValues[key] == null) {
         _localizedValues.addAll({key: key});
-        _I18n.add(key);
+        _I10n.add(key);
       }
       return true;
     }());
@@ -177,12 +186,18 @@ class I18n {
     return _useKey ? key ?? "" : _localizedValues[key] ?? key ?? "";
   }
 
-  /// Three properties traditionally found in the Locale object.
-  String get languageCode => _locale?.languageCode;
+  /// The current Locale object.
+  static Locale get locale => _locale;
 
-  String get countryCode => _locale?.countryCode;
+  Object get message => _ex?.toString() ?? "";
 
-  int get hashCode => _locale?.hashCode;
+  static bool inError() => _ex != null;
+
+  static Exception getError() {
+    var e = _ex;
+    _ex = null;
+    return e;
+  }
 }
 
 typedef fileFunc = List<String> Function(File file);
@@ -190,7 +205,7 @@ typedef fileFunc = List<String> Function(File file);
 typedef collectFunc = bool Function(
     List<Map<String, String>> maps, List<String> supportedLanguages);
 
-class _I18n {
+class _I10n {
   static List<String> lines;
   static File file;
   static String contents = "";
@@ -251,7 +266,7 @@ class _I18n {
   static Future<bool> load() async {
     String content;
     try {
-      content = await rootBundle.loadString(I18n.csvFile);
+      content = await rootBundle.loadString(I10n.csvFile);
       lines = content.split("\r\n");
     } catch (ex) {
       lines = [];
@@ -264,16 +279,16 @@ class _I18n {
       lines.removeWhere((line) => line.isEmpty);
 
       if (lines.isEmpty) {
-        logError("File is empty:\n ${I18n._csvFile}");
+        logError("File is empty:\n ${I10n._csvFile}");
         return lines;
       }
       return lines;
     }, (List<Map<String, String>> maps, List<String> languages) {
-      I18n?._locales = languages;
+      I10n?._locales = languages;
 
-      I18n?._allValues?.clear();
+      I10n?._allValues?.clear();
 
-      I18n?._allValues = {};
+      I10n?._allValues = {};
 
       Map<String, String> map;
       String lang;
@@ -288,7 +303,7 @@ class _I18n {
 
         if (map == null) break;
 
-        I18n?._allValues?.addAll({lang: map});
+        I10n?._allValues?.addAll({lang: map});
       }
       return true;
     });
@@ -395,14 +410,14 @@ class _I18n {
     return file;
   }
 
-  static void logError(String text) => print("[I18N ERROR] $text\n\n");
+  static void logError(String text) => print("[I10n ERROR] $text\r\n");
 }
 
-class I18nDelegate extends LocalizationsDelegate<I18n> {
+class I10nDelegate extends LocalizationsDelegate<I10n> {
   // No need for more than one instance.
-  factory I18nDelegate() => _this ??= I18nDelegate._();
-  static I18nDelegate _this;
-  I18nDelegate._();
+  factory I10nDelegate() => _this ??= I10nDelegate._();
+  static I10nDelegate _this;
+  I10nDelegate._();
 
   static Locale _locale;
   static bool _reload = false;
@@ -410,24 +425,24 @@ class I18nDelegate extends LocalizationsDelegate<I18n> {
   @override
   bool isSupported(Locale locale) {
     // If 'empty' then you're loading the app's locale.
-    if (I18n._locales == null || I18n._locales.isEmpty) {
-      I18n._locale ??= locale;
-      I18n._locales = [locale.languageCode];
+    if (I10n._locales == null || I10n._locales.isEmpty) {
+      I10n._locales = [locale.languageCode];
+      I10n._locale ??= locale;
       _locale ??= locale;
     }
-    return I18n._locales.contains(locale.languageCode);
+    return I10n._locales.contains(locale.languageCode);
   }
 
   @override
-  Future<I18n> load(Locale locale) {
+  Future<I10n> load(Locale locale) {
     _locale ??= locale;
     _reload = locale != _locale;
     _locale = locale;
-    return I18n.load(locale);
+    return I10n.load(locale);
   }
 
   @override
-  bool shouldReload(I18nDelegate old) {
+  bool shouldReload(I10nDelegate old) {
     bool reload = _reload;
     if (!reload) reload = this != old;
     _reload = false;

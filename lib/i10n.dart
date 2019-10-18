@@ -1,4 +1,4 @@
-library i18n_translator;
+library i10n_translator;
 
 ///
 /// Copyright (C) 2019 Andrious Solutions
@@ -23,4 +23,4 @@ library i18n_translator;
 ///
 ///
 
-export 'package:i18n_translator/src/i18n_translator.dart';
+export 'package:i10n_translator/src/i10n.dart';

@@ -1,3 +1,8 @@
+## 1.1.0
+October 17, 2019
+- Renamed from i18n to i10n
+- Removed Locale properties for getter, locale
+
 ## 1.0.0
 October 16, 2019
 - Initial Production Release

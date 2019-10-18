@@ -145,5 +145,5 @@ tmp/**/*
 google-services.json
 
 
-!/bin/i18n_translator.dart
+!/bin/i10n_translator.dart
 !/bin/

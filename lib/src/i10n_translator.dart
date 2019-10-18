@@ -1,4 +1,4 @@
-library i18n_translator;
+library i10n_translator;
 
 ///
 /// Copyright (C) 2019 Andrious Solutions
@@ -26,12 +26,12 @@ import 'dart:io' show File, FileMode;
 
 import 'package:csv/csv.dart' show CsvToListConverter;
 
-class I18nTranslator {
+class I10nTranslator {
   void generate([String filePath, String targetPath]) {
-    if (filePath == null || filePath.trim().isEmpty) filePath = "i18n.csv";
+    if (filePath == null || filePath.trim().isEmpty) filePath = "i10n.csv";
 
     if (targetPath == null || targetPath.trim().isEmpty)
-      targetPath = "i18n_words.dart";
+      targetPath = "i10n_words.dart";
 
     File file = File(filePath);
 
@@ -156,7 +156,7 @@ class I18nTranslator {
     }
 
     result += """
-    \nMap<String, Map<String, String>> i18nWords = {
+    \nMap<String, Map<String, String>> i10nWords = {
     """;
 
     supportedLanguages.asMap().forEach((index, lang) {
