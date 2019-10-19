@@ -1,3 +1,8 @@
+## 1.1.1
+October 18, 2019
+- Add main() to i10n_translator.dart
+- Remove the bin folder
+
 ## 1.1.0
 October 17, 2019
 - Renamed from i18n to i10n
