@@ -1,3 +1,7 @@
+## 1.1.2
+October 20, 2019
+- Updated README.md
+
 ## 1.1.1
 October 18, 2019
 - Add main() to i10n_translator.dart

@@ -27,8 +27,6 @@ import 'dart:io' show File, FileMode;
 import 'package:csv/csv.dart' show CsvToListConverter;
 
 class I10nTranslator {
-
-  
   void generate([String filePath, String targetPath]) {
     if (filePath == null || filePath.trim().isEmpty) filePath = "i10n.csv";
 
@@ -109,10 +107,10 @@ class I10nTranslator {
 
     translations = _makeTranslations(maps, supportedLanguages);
 
-    translations += """
-    \nList<String> locales = ${languages.map((e) => "'$e'").toList()};
-    \n
-    """;
+//    translations += """
+//    \nList<String> locales = ${languages.map((e) => "'$e'").toList()};
+//    \n
+//    """;
 
     _writeInFile(translations, targetPath);
   }
@@ -214,6 +212,12 @@ class I10nTranslator {
   static void logError(String text) => print("[I10N ERROR] $text\r\n");
 }
 
+void main(List<String> arguments) {
+  final translator = I10nTranslator();
+  translator.generate(arguments.length == 0 ? null : arguments.first,
+      arguments.length == 2 ? arguments[1] : null);
+}
+
 const List<String> RESERVED_WORDS = [
   "assert",
   "default",
@@ -249,15 +253,3 @@ const List<String> RESERVED_WORDS = [
   "null",
   "true",
 ];
-
-void main(List<String> arguments) {
-  if (arguments.isEmpty) {
-    I10nTranslator.logError(
-        "Missing arguments (arguments are CSV file's name (mandatory) and target's file path)");
-    return;
-  }
-
-  final translator = I10nTranslator();
-  translator.generate(
-      arguments.first, arguments.length == 2 ? arguments[1] : null);
-}
