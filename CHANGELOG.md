@@ -1,3 +1,8 @@
+## 1.1.3
+October 20, 2019
+- Supply an example
+- Updated README.md
+
 ## 1.1.2
 October 20, 2019
 - Updated README.md
