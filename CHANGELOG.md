@@ -1,10 +1,14 @@
+## 1.2.1
+October 24, 2019
+- if (_csvFile != null && _csvFile.isNotEmpty) {
+
 ## 1.2.0
 October 24, 2019
 - load the app's locale, if (I10n._locale == null)
 - path: ^1.0.0
 - test cvs: parameter in init()
 - removed \nList<String> locales = ${languages.map((e) => "'$e'").toList()};
-- a second example, main02.dart 
+- a second example, main02.dart, in Github repository 
 - use the function, getExternalStorageDirectory();
 
 ## 1.1.3

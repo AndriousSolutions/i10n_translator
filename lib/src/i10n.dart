@@ -97,8 +97,10 @@ class I10n {
     bool init = true;
 
     if (_allValues == null || _allValues.isEmpty) {
-      // Open a csv file to place in entries.
-      _I10n.init(p.basename(_csvFile));
+      if (_csvFile != null && _csvFile.isNotEmpty) {
+        // Open a csv file to place in entries.
+        _I10n.init(p.basename(_csvFile));
+      }
       try {
         // Open an asset if any to read in the entries.
         init = await _I10n.load();
