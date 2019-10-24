@@ -2,10 +2,10 @@
 #Root Files & Folders
 #/.gradle
 /backup
-#build/
+build/
 
 #Arbitary Files
-*.txt
+#*.txt
 *.doc
 *.docx
 
@@ -68,7 +68,7 @@ Temporary Items
 # Generated files
 bin/
 gen/
-out/
+#out/
 
 # Local configuration file (sdk path, etc)
 #/local.properties
@@ -111,10 +111,10 @@ doc/api/
 # test/
 
 # Don't need the Android stuff
-#android/
+android/
 
 # Don't need the iOS stuff
-#ios/
+ios/
 
 # Avoid committing generated JavaScript files:
 /*.dart.js
@@ -142,7 +142,7 @@ tmp/**/*
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
-
+#example/build/
 !example/.dart_tool/*
 !example/.flutter-plugins
 !example/.gitignore

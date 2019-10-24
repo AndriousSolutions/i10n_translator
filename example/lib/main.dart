@@ -6,7 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart'
         GlobalMaterialLocalizations,
         GlobalWidgetsLocalizations;
 
-import 'package:prefs/prefs.dart';
+import 'package:prefs/prefs.dart' show Prefs;
 
 import 'package:i10n_translator/i10n.dart';
 

@@ -24,7 +24,7 @@ library i10n_translator;
 ///
 import 'dart:async' show Future;
 
-import 'dart:io' show Directory, File;
+import 'dart:io' show Directory, File, Platform;
 
 import 'package:flutter/material.dart'
     show
@@ -43,8 +43,13 @@ import 'package:flutter/services.dart' show rootBundle;
 
 import 'package:csv/csv.dart' show CsvToListConverter;
 
+import 'package:path/path.dart' as p;
+
 import 'package:path_provider/path_provider.dart'
-    show getApplicationDocumentsDirectory, getTemporaryDirectory;
+    show
+        getApplicationDocumentsDirectory,
+        getExternalStorageDirectory,
+        getTemporaryDirectory;
 
 import 'i10n_translator.dart' show RESERVED_WORDS;
 
@@ -55,7 +60,8 @@ class I10n {
 
   static String _csvFile;
   static String get csvFile {
-    if (_csvFile == null || _csvFile.isEmpty) _csvFile = "assets/i10n/i10n.csv";
+    if (_csvFile == null || _csvFile.isEmpty)
+      _csvFile = p.join("assets", "i10n", "i10n.csv");
     return _csvFile;
   }
 
@@ -75,8 +81,14 @@ class I10n {
 
     // Assign the csv file if not already assigned
     if (_csvFile == null && csv != null && csv.trim().isNotEmpty) {
-      _csvFile ??= csv.trim();
-      if (_csvFile.indexOf("/") == 0) _csvFile = _csvFile.substring(1);
+      _csvFile = csv.trim();
+      // If no path, set a path
+      if (p.dirname(_csvFile) == '.') {
+        _csvFile = p.join("assets", "i10n", p.basename(_csvFile));
+      } else if (_csvFile.indexOf(p.separator) == 0)
+        _csvFile = _csvFile.substring(1);
+      // If no file extension, add it.
+      _csvFile = p.setExtension(_csvFile, ".csv");
     }
 
     // Assign the map if not already assigned
@@ -86,7 +98,7 @@ class I10n {
 
     if (_allValues == null || _allValues.isEmpty) {
       // Open a csv file to place in entries.
-      _I10n.init(_csvFile);
+      _I10n.init(p.basename(_csvFile));
       try {
         // Open an asset if any to read in the entries.
         init = await _I10n.load();
@@ -218,13 +230,22 @@ class _I10n {
 
     String path;
     try {
-      Directory directory = await getApplicationDocumentsDirectory();
-      path = directory.path + "/";
+      Directory directory;
+      if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
+      } else {
+        directory = await getExternalStorageDirectory();
+      }
+      path = directory.path; //+ p.separator;
     } catch (ex) {
       path = "";
     }
 
-    file = File("$path$csvFile");
+    if (path.isEmpty) return false;
+
+    path = p.join(path, csvFile);
+
+    file = File(path);
 
     bool init = true;
 
@@ -424,10 +445,15 @@ class I10nDelegate extends LocalizationsDelegate<I10n> {
 
   @override
   bool isSupported(Locale locale) {
-    // If 'empty' then you're loading the app's locale.
-    if (I10n._locales == null || I10n._locales.isEmpty) {
-      I10n._locales = [locale.languageCode];
-      I10n._locale ??= locale;
+    // If 'I10n._locale == null' then you're loading the app's locale.
+    if (I10n._locale == null) {
+      I10n._locale = locale;
+
+      if (I10n._locales == null || I10n._locales.isEmpty) {
+        I10n._locales = [locale.languageCode];
+      } else if (!I10n._locales.contains(locale.languageCode))
+        I10n._locales.add(locale.languageCode);
+
       _locale ??= locale;
     }
     return I10n._locales.contains(locale.languageCode);

@@ -107,11 +107,6 @@ class I10nTranslator {
 
     translations = _makeTranslations(maps, supportedLanguages);
 
-//    translations += """
-//    \nList<String> locales = ${languages.map((e) => "'$e'").toList()};
-//    \n
-//    """;
-
     _writeInFile(translations, targetPath);
   }
 
