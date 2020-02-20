@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.3.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -22,6 +22,8 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
+
+  flutter_cupertino_localizations: ^1.0.0
 
 # https://pub.dev/packages/prefs
   i10n_translator:

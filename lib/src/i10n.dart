@@ -54,8 +54,8 @@ import 'package:path_provider/path_provider.dart'
 import 'i10n_translator.dart' show RESERVED_WORDS;
 
 class I10n {
-  factory I10n() => _this ??= I10n._();
-  static I10n _this;
+  factory I10n() => _this;
+  static final I10n _this = I10n._();
   I10n._();
 
   static String _csvFile;

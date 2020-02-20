@@ -1,3 +1,7 @@
+## 1.2.2
+February 20, 2020
+- Include a bin directory for command line to work.
+
 ## 1.2.1
 October 24, 2019
 - if (_csvFile != null && _csvFile.isNotEmpty) {
