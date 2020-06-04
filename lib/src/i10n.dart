@@ -51,7 +51,7 @@ import 'package:path_provider/path_provider.dart'
         getExternalStorageDirectory,
         getTemporaryDirectory;
 
-import 'i10n_translator.dart' show RESERVED_WORDS;
+import 'package:i10n_translator/src/i10n_translator.dart' show RESERVED_WORDS;
 
 class I10n {
   factory I10n() => _this;

@@ -1,3 +1,8 @@
+## 1.2.3
+June 04, 2020
+- Corrected Apache Licence
+- sdk: ">=2.6.0 <3.0.0"
+
 ## 1.2.2
 February 20, 2020
 - Include a bin directory for command line to work.
