@@ -1,3 +1,7 @@
+## 1.2.5
+June 04, 2020
+- Comment out getTextFileFromAssets();
+
 ## 1.2.4
 June 04, 2020
 - Remove translator.dart

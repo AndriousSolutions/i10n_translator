@@ -48,8 +48,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart'
     show
         getApplicationDocumentsDirectory,
-        getExternalStorageDirectory,
-        getTemporaryDirectory;
+        getExternalStorageDirectory;
 
 import 'package:i10n_translator/src/i10n_translator.dart' show RESERVED_WORDS;
 
@@ -402,36 +401,36 @@ class _I10n {
       .map((element) => element.toString())
       .toList();
 
-  static Future<File> getTextFileFromAssets(String key) async {
-    if (key == null || key.trim().isEmpty) return null;
-
-    key = key.trim();
-
-    if (key.indexOf("/") == 0) {
-      key = key.substring(1);
-      if (key.trim().isEmpty) return null;
-    }
-
-    String content;
-    try {
-      content = await rootBundle.loadString(key);
-    } catch (ex) {
-      content = null;
-    }
-
-    if (content == null) return null;
-
-    Directory directory = await getTemporaryDirectory();
-
-    File file;
-    try {
-      file = File("${directory.path}/$key");
-      file.writeAsStringSync(content, flush: true);
-    } catch (ex) {
-      file = null;
-    }
-    return file;
-  }
+//  static Future<File> getTextFileFromAssets(String key) async {
+//    if (key == null || key.trim().isEmpty) return null;
+//
+//    key = key.trim();
+//
+//    if (key.indexOf("/") == 0) {
+//      key = key.substring(1);
+//      if (key.trim().isEmpty) return null;
+//    }
+//
+//    String content;
+//    try {
+//      content = await rootBundle.loadString(key);
+//    } catch (ex) {
+//      content = null;
+//    }
+//
+//    if (content == null) return null;
+//
+//    Directory directory = await getTemporaryDirectory();
+//
+//    File file;
+//    try {
+//      file = File("${directory.path}/$key");
+//      file.writeAsStringSync(content, flush: true);
+//    } catch (ex) {
+//      file = null;
+//    }
+//    return file;
+//  }
 
   static void logError(String text) => print("[I10n ERROR] $text\r\n");
 }
