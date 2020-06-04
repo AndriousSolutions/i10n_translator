@@ -1,3 +1,7 @@
+## 1.2.4
+June 04, 2020
+- Remove translator.dart
+
 ## 1.2.3
 June 04, 2020
 - Corrected Apache Licence
