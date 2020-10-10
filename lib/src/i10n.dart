@@ -26,6 +26,8 @@ import 'dart:async' show Future;
 
 import 'dart:io' show Directory, File, Platform;
 
+import 'dart:ui' as ui show TextHeightBehavior;
+
 import 'package:flutter/material.dart'
     show
         Key,
@@ -46,9 +48,7 @@ import 'package:csv/csv.dart' show CsvToListConverter;
 import 'package:path/path.dart' as p;
 
 import 'package:path_provider/path_provider.dart'
-    show
-        getApplicationDocumentsDirectory,
-        getExternalStorageDirectory;
+    show getApplicationDocumentsDirectory, getExternalStorageDirectory;
 
 import 'package:i10n_translator/src/i10n_translator.dart' show RESERVED_WORDS;
 
@@ -72,7 +72,14 @@ class I10n {
   static Map<String, Map<String, String>> _allValues;
   static List<String> _locales;
 
-  static Future<bool> init(
+  @Deprecated('Use the function, initAsync, instead of init')
+  static Future<bool> init({
+    String csv,
+    Map<String, Map<String, String>> map,
+  }) =>
+      I10n.initAsync(csv: csv, map: map);
+
+  static Future<bool> initAsync(
       {String csv, Map<String, Map<String, String>> map}) async {
     // Already been called
     if ((_allValues != null && _allValues.isNotEmpty) || _I10n.file != null)
@@ -114,15 +121,30 @@ class I10n {
     return init;
   }
 
-  static List<Locale> get supportedLocales =>
-      _locales == null ? null : _locales.expand((e) => [Locale(e)]).toList();
+  static List<Locale> get supportedLocales => _locales == null
+      ? null
+      : _locales.expand((e) {
+          final List<String> locale = e.split('-');
+          String languageCode;
+          String countryCode;
+          if (locale.length == 2) {
+            languageCode = locale.first;
+            countryCode = locale.last;
+          } else {
+            languageCode = locale.first;
+          }
+          return [Locale(languageCode, countryCode)];
+        }).toList();
 
   static Future<bool> dispose() => _I10n.dispose();
 
   /// Load the static Map object with the appropriate translations.
-  static Future<I10n> load(Locale locale) {
+  static Future<I10n> load(Locale locale) async {
     _locale = locale;
 
+//    await initializeDateFormatting(locale.languageCode, null);
+
+    String localString = locale.toLanguageTag();
     String code;
 
     if (_allValues == null) {
@@ -131,7 +153,7 @@ class I10n {
       _locales ??= ['en'];
     } else {
       code = _allValues.keys.firstWhere(
-          (code) => Locale(code).languageCode == locale.languageCode,
+          (code) => code.toString() == localString,
           orElse: () => "");
       _useKey = code.isEmpty;
     }
@@ -140,6 +162,39 @@ class I10n {
 
     return Future.value(I10n());
   }
+
+  /// Convert a Text object to one with a translation.
+  static Text of(
+    Text text, {
+    Key key,
+    TextStyle style,
+    StrutStyle strutStyle,
+    TextAlign textAlign,
+    TextDirection textDirection,
+    Locale locale,
+    bool softWrap,
+    TextOverflow overflow,
+    double textScaleFactor,
+    int maxLines,
+    String semanticsLabel,
+    TextWidthBasis textWidthBasis,
+  }) =>
+      t(
+        text?.data,
+        key: key ?? text?.key,
+        style: style ?? text?.style,
+        strutStyle: strutStyle ?? text?.strutStyle,
+        textAlign: textAlign ?? text?.textAlign,
+        textDirection: textDirection ?? text?.textDirection,
+        locale: locale ?? text?.locale,
+        softWrap: softWrap ?? text?.softWrap,
+        overflow: overflow ?? text?.overflow,
+        textScaleFactor: textScaleFactor ?? text?.textScaleFactor,
+        maxLines: maxLines ?? text?.maxLines,
+        semanticsLabel: semanticsLabel ?? text?.semanticsLabel,
+        textWidthBasis: textWidthBasis ?? text?.textWidthBasis,
+      );
+
 
   /// Supply a Text object for the translation.
   static Text t(
@@ -156,8 +211,8 @@ class I10n {
     int maxLines,
     String semanticsLabel,
     TextWidthBasis textWidthBasis,
-  }) {
-    return Text(
+    ui.TextHeightBehavior textHeightBehavior,
+  }) => Text(
       s(data),
       key: key,
       style: style,
@@ -171,8 +226,9 @@ class I10n {
       maxLines: maxLines,
       semanticsLabel: semanticsLabel,
       textWidthBasis: textWidthBasis,
+      textHeightBehavior: textHeightBehavior,
     );
-  }
+
 
   /// Translate the String
   static String s(String key) {
@@ -181,7 +237,10 @@ class I10n {
     // assert is removed in production.
     assert(() {
       if (key == null) {
-        key = "null";
+        key = 'null';
+      }else{
+        // Remove any leading and trailing spaces.
+        key = key.trim();
       }
 
       if (_I10n.file != null &&
@@ -196,7 +255,7 @@ class I10n {
     }());
 
     /// If not translation, provide the key itself instead.
-    return _useKey ? key ?? "" : _localizedValues[key] ?? key ?? "";
+    return _useKey ? key ?? '' : _localizedValues[key] ?? key ?? '';
   }
 
   /// The current Locale object.
@@ -221,7 +280,7 @@ typedef collectFunc = bool Function(
 class _I10n {
   static List<String> lines;
   static File file;
-  static String contents = "";
+  static String contents = '';
 
   static Future<bool> init(String csvFile) async {
     // Already been called
@@ -260,7 +319,7 @@ class _I10n {
       try {
         contents = await file.readAsString();
       } catch (ex) {
-        contents = "";
+        contents = '';
         init = false;
       }
     }
@@ -281,7 +340,7 @@ class _I10n {
 
   static Future<bool> add(String word) async {
     if (word == null || word.trim().isEmpty) return false;
-    contents += "${word.trim()},\r\n";
+    contents += '${word.trim()},\r\n';
     return true;
   }
 
@@ -289,7 +348,7 @@ class _I10n {
     String content;
     try {
       content = await rootBundle.loadString(I10n.csvFile);
-      lines = content.split("\r\n");
+      lines = content.split('\r\n');
     } catch (ex) {
       lines = [];
     }
@@ -342,7 +401,8 @@ class _I10n {
     final List<String> languages = getLineOfWords(lines.first);
 
     Iterable<String> invalid = languages.where((code) {
-      return code.trim().length != 2;
+      final length = code.trim().length;
+      return length != 2 && length != 3 && length != 5;
     });
 
     if (invalid.isNotEmpty) {
@@ -451,13 +511,13 @@ class I10nDelegate extends LocalizationsDelegate<I10n> {
       I10n._locale = locale;
 
       if (I10n._locales == null || I10n._locales.isEmpty) {
-        I10n._locales = [locale.languageCode];
-      } else if (!I10n._locales.contains(locale.languageCode))
+        I10n._locales = [locale.toLanguageTag()];
+      } else if (!I10n._locales.contains(locale.toLanguageTag())) {
         I10n._locales.add(locale.languageCode);
-
+      }
       _locale ??= locale;
     }
-    return I10n._locales.contains(locale.languageCode);
+    return I10n._locales.contains(locale.toLanguageTag());
   }
 
   @override

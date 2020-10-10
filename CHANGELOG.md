@@ -1,3 +1,9 @@
+## 1.3.0
+October 08, 2020
+- Use the function, initAsync(), instead of init()
+- New function, I10n.of(Text text)
+- Use of languageTag() and corrected getter, supportedLocales
+
 ## 1.2.5
 June 04, 2020
 - Comment out getTextFileFromAssets();
