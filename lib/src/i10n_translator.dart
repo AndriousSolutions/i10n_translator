@@ -26,6 +26,7 @@ import 'dart:io' show File, FileMode;
 
 import 'package:csv/csv.dart' show CsvToListConverter;
 
+/// Loads translations from a file into memory
 class I10nTranslator {
   void generate([String filePath, String targetPath]) {
     if (filePath == null || filePath.trim().isEmpty) filePath = "i10n.csv";

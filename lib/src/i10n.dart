@@ -52,6 +52,7 @@ import 'package:path_provider/path_provider.dart'
 
 import 'package:i10n_translator/src/i10n_translator.dart' show RESERVED_WORDS;
 
+/// Main I10n class to incorporate text translations into a mobile app.
 class I10n {
   factory I10n() => _this;
   static final I10n _this = I10n._();
@@ -494,6 +495,8 @@ class _I10n {
   static void logError(String text) => print("[I10n ERROR] $text\r\n");
 }
 
+/// The I10n package's locale delegate
+///
 class I10nDelegate extends LocalizationsDelegate<I10n> {
   // No need for more than one instance.
   factory I10nDelegate() => _this ??= I10nDelegate._();

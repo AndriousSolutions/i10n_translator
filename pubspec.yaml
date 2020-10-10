@@ -1,7 +1,7 @@
 name: i10n_translator
 description: Allows you to easily provide translations of your local text to other supported languages.
 
-version: 1.3.0
+version: 1.3.0+1
 
 homepage: https://github.com/AndriousSolutions/i18n_translator
 repository: https://github.com/AndriousSolutions/i18n_translator
