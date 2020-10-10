@@ -195,7 +195,6 @@ class I10n {
         textWidthBasis: textWidthBasis ?? text?.textWidthBasis,
       );
 
-
   /// Supply a Text object for the translation.
   static Text t(
     String data, {
@@ -212,23 +211,23 @@ class I10n {
     String semanticsLabel,
     TextWidthBasis textWidthBasis,
     ui.TextHeightBehavior textHeightBehavior,
-  }) => Text(
-      s(data),
-      key: key,
-      style: style,
-      strutStyle: strutStyle,
-      textAlign: textAlign,
-      textDirection: textDirection,
-      locale: locale,
-      softWrap: softWrap,
-      overflow: overflow,
-      textScaleFactor: textScaleFactor,
-      maxLines: maxLines,
-      semanticsLabel: semanticsLabel,
-      textWidthBasis: textWidthBasis,
-      textHeightBehavior: textHeightBehavior,
-    );
-
+  }) =>
+      Text(
+        s(data),
+        key: key,
+        style: style,
+        strutStyle: strutStyle,
+        textAlign: textAlign,
+        textDirection: textDirection,
+        locale: locale,
+        softWrap: softWrap,
+        overflow: overflow,
+        textScaleFactor: textScaleFactor,
+        maxLines: maxLines,
+        semanticsLabel: semanticsLabel,
+        textWidthBasis: textWidthBasis,
+        textHeightBehavior: textHeightBehavior,
+      );
 
   /// Translate the String
   static String s(String key) {
@@ -238,7 +237,7 @@ class I10n {
     assert(() {
       if (key == null) {
         key = 'null';
-      }else{
+      } else {
         // Remove any leading and trailing spaces.
         key = key.trim();
       }
