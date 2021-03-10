@@ -1,7 +1,8 @@
 
-## 2.0.0
+## 2.0.0+2
 March 09, 2021
 - Null Safety 2.12.0
+- Replace example app with just code
 
 ## 1.3.0+1
 October 08, 2020
