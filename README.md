@@ -16,7 +16,7 @@ Instead, always go up to the '**Major**' value in the semantic version number wh
 And so, in this case, add this to your package's pubspec.yaml file instead:
 ```javascript
 dependencies:
-  i10n_translator:^1.0.0
+  i10n_translator:^2.0.0
 ```
 #### A CSV File
 A text file is used to contain the translations separated by commas. It is commonly called a CSV file and is readily recognized by many editors including MS Excel. This allows 'non-developers' for example to easily enter the text translations for your Flutter app. Below is a screenshot of the CSV file named, i10n.csv, displayed in the simple Windows text editor called, Notepad.
