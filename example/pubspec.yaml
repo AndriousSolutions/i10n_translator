@@ -1,17 +1,9 @@
 name: example
 description: A new Flutter project.
+homepage: https://github.com/AndriousSolutions/i10n_translator
+repository: https://github.com/AndriousSolutions/i10n_translator
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 2.0.0
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -23,18 +15,19 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  flutter_cupertino_localizations: ^1.0.0
+# The following adds the Cupertino Icons font to your application.
+# Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.2
 
 # https://pub.dev/packages/prefs
   i10n_translator:
-    path: ../../i10n_translator
+#    path: ../../i10n_translator
 
 # https://pub.dev/packages/prefs
   prefs: ^3.0.0
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+# https://pub.dev/packages/flutter_cupertino_localizations:
+  flutter_cupertino_localizations: ^1.0.0
 
 dev_dependencies:
   flutter_test:
