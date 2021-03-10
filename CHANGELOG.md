@@ -1,8 +1,9 @@
 
-## 2.0.0+4
+## 2.0.0+5
 March 09, 2021
 - Null Safety 2.12.0
 - Delete example app
+- Publishing as a pre-release
 
 ## 1.3.0+1
 October 08, 2020
