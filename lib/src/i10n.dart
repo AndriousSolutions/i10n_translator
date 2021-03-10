@@ -54,80 +54,87 @@ import 'package:i10n_translator/src/i10n_translator.dart' show RESERVED_WORDS;
 
 /// Main I10n class to incorporate text translations into a mobile app.
 class I10n {
-  factory I10n() => _this;
-  static final I10n _this = I10n._();
+  factory I10n() => _this ??= I10n._();
   I10n._();
+  static I10n? _this;
 
-  static String _csvFile;
-  static String get csvFile {
-    if (_csvFile == null || _csvFile.isEmpty)
-      _csvFile = p.join("assets", "i10n", "i10n.csv");
+  static String? _csvFile;
+  static String? get csvFile {
+    if (_csvFile == null || _csvFile!.isEmpty) {
+      _csvFile = p.join('assets', 'i10n', 'i10n.csv');
+    }
     return _csvFile;
   }
 
-  static Exception _ex;
-  static Locale _locale;
-  static Map<String, String> _localizedValues;
+  static Exception? _ex;
+  static Locale? _locale;
+  static Map<String?, String?>? _localizedValues;
   static bool _useKey = true;
 
-  static Map<String, Map<String, String>> _allValues;
-  static List<String> _locales;
+  static Map<String, Map<String, String>>? _allValues;
+  static List<String>? _locales;
 
   @Deprecated('Use the function, initAsync, instead of init')
-  static Future<bool> init({
-    String csv,
-    Map<String, Map<String, String>> map,
+  static Future<bool?> init({
+    String? csv,
+    Map<String, Map<String, String>>? map,
   }) =>
       I10n.initAsync(csv: csv, map: map);
 
-  static Future<bool> initAsync(
-      {String csv, Map<String, Map<String, String>> map}) async {
+  static Future<bool?> initAsync(
+      {String? csv, Map<String, Map<String, String>>? map}) async {
     // Already been called
-    if ((_allValues != null && _allValues.isNotEmpty) || _I10n.file != null)
+    if ((_allValues != null && _allValues!.isNotEmpty) || _I10n.file != null) {
       return false;
+    }
 
     // Assign the csv file if not already assigned
     if (_csvFile == null && csv != null && csv.trim().isNotEmpty) {
       _csvFile = csv.trim();
       // If no path, set a path
-      if (p.dirname(_csvFile) == '.') {
-        _csvFile = p.join("assets", "i10n", p.basename(_csvFile));
-      } else if (_csvFile.indexOf(p.separator) == 0)
-        _csvFile = _csvFile.substring(1);
+      if (p.dirname(_csvFile!) == '.') {
+        _csvFile = p.join('assets', 'i10n', p.basename(_csvFile!));
+      } else if (_csvFile!.indexOf(p.separator) == 0) {
+        _csvFile = _csvFile!.substring(1);
+      }
       // If no file extension, add it.
-      _csvFile = p.setExtension(_csvFile, ".csv");
+      _csvFile = p.setExtension(_csvFile!, '.csv');
     }
 
     // Assign the map if not already assigned
-    if (map != null && map.isNotEmpty) _allValues ??= map;
+    if (map != null && map.isNotEmpty) {
+      _allValues ??= map;
+    }
 
-    bool init = true;
+    bool? init = true;
 
-    if (_allValues == null || _allValues.isEmpty) {
-      if (_csvFile != null && _csvFile.isNotEmpty) {
+    if (_allValues == null || _allValues!.isEmpty) {
+      if (_csvFile != null && _csvFile!.isNotEmpty) {
         // Open a csv file to place in entries.
-        _I10n.init(p.basename(_csvFile));
+        await _I10n.init(p.basename(_csvFile!));
       }
       try {
         // Open an asset if any to read in the entries.
-        init = await _I10n.load();
+        // ignore: avoid_as
+        init = await (_I10n.load() as Future<bool>);
       } catch (ex) {
         init = false;
       }
     }
 
-    if (_allValues != null)
-      _locales ??= _allValues.keys.expand((e) => [e]).toList();
+    if (_allValues != null) {
+      _locales ??= _allValues!.keys.expand((e) => [e]).toList();
+    }
 
     return init;
   }
 
-  static List<Locale> get supportedLocales => _locales == null
+  static List<Locale>? get supportedLocales => _locales == null
       ? null
-      : _locales.expand((e) {
+      : _locales!.expand((e) {
           final List<String> locale = e.split('-');
           String languageCode;
-          String countryCode;
+          String? countryCode;
           if (locale.length == 2) {
             languageCode = locale.first;
             countryCode = locale.last;
@@ -145,40 +152,40 @@ class I10n {
 
 //    await initializeDateFormatting(locale.languageCode, null);
 
-    String localString = locale.toLanguageTag();
-    String code;
+    final String localString = locale.toLanguageTag();
+    String? code;
 
     if (_allValues == null) {
       // No means to get the translations.
       _useKey = true;
       _locales ??= ['en'];
     } else {
-      code = _allValues.keys.firstWhere(
+      code = _allValues!.keys.firstWhere(
           (code) => code.toString() == localString,
-          orElse: () => "");
+          orElse: () => '');
       _useKey = code.isEmpty;
     }
 
-    _localizedValues = _useKey ? {} : _allValues[code];
+    _localizedValues = _useKey ? {} : _allValues![code!];
 
     return Future.value(I10n());
   }
 
   /// Convert a Text object to one with a translation.
   static Text of(
-    Text text, {
-    Key key,
-    TextStyle style,
-    StrutStyle strutStyle,
-    TextAlign textAlign,
-    TextDirection textDirection,
-    Locale locale,
-    bool softWrap,
-    TextOverflow overflow,
-    double textScaleFactor,
-    int maxLines,
-    String semanticsLabel,
-    TextWidthBasis textWidthBasis,
+    Text? text, {
+    Key? key,
+    TextStyle? style,
+    StrutStyle? strutStyle,
+    TextAlign? textAlign,
+    TextDirection? textDirection,
+    Locale? locale,
+    bool? softWrap,
+    TextOverflow? overflow,
+    double? textScaleFactor,
+    int? maxLines,
+    String? semanticsLabel,
+    TextWidthBasis? textWidthBasis,
   }) =>
       t(
         text?.data,
@@ -198,20 +205,20 @@ class I10n {
 
   /// Supply a Text object for the translation.
   static Text t(
-    String data, {
-    Key key,
-    TextStyle style,
-    StrutStyle strutStyle,
-    TextAlign textAlign,
-    TextDirection textDirection,
-    Locale locale,
-    bool softWrap,
-    TextOverflow overflow,
-    double textScaleFactor,
-    int maxLines,
-    String semanticsLabel,
-    TextWidthBasis textWidthBasis,
-    ui.TextHeightBehavior textHeightBehavior,
+    String? data, {
+    Key? key,
+    TextStyle? style,
+    StrutStyle? strutStyle,
+    TextAlign? textAlign,
+    TextDirection? textDirection,
+    Locale? locale,
+    bool? softWrap,
+    TextOverflow? overflow,
+    double? textScaleFactor,
+    int? maxLines,
+    String? semanticsLabel,
+    TextWidthBasis? textWidthBasis,
+    ui.TextHeightBehavior? textHeightBehavior,
   }) =>
       Text(
         s(data),
@@ -231,7 +238,7 @@ class I10n {
       );
 
   /// Translate the String
-  static String s(String key) {
+  static String s(String? key) {
     // While developing, return 'null' when appropriate
     // Add key words to a file if not yet found there.
     // assert is removed in production.
@@ -240,33 +247,33 @@ class I10n {
         key = 'null';
       } else {
         // Remove any leading and trailing spaces.
-        key = key.trim();
+        key = key!.trim();
       }
 
       if (_I10n.file != null &&
           _useKey &&
-          (_allValues == null || _allValues.isEmpty) &&
+          (_allValues == null || _allValues!.isEmpty) &&
           _localizedValues != null &&
-          _localizedValues[key] == null) {
-        _localizedValues.addAll({key: key});
+          _localizedValues![key] == null) {
+        _localizedValues!.addAll({key: key});
         _I10n.add(key);
       }
       return true;
     }());
 
     /// If not translation, provide the key itself instead.
-    return _useKey ? key ?? '' : _localizedValues[key] ?? key ?? '';
+    return _useKey ? key ?? '' : _localizedValues![key] ?? key ?? '';
   }
 
   /// The current Locale object.
-  static Locale get locale => _locale;
+  static Locale? get locale => _locale;
 
-  Object get message => _ex?.toString() ?? "";
+  Object get message => _ex?.toString() ?? '';
 
   static bool inError() => _ex != null;
 
-  static Exception getError() {
-    var e = _ex;
+  static Exception? getError() {
+    final e = _ex;
     _ex = null;
     return e;
   }
@@ -277,31 +284,38 @@ typedef fileFunc = List<String> Function(File file);
 typedef collectFunc = bool Function(
     List<Map<String, String>> maps, List<String> supportedLanguages);
 
+// ignore: avoid_classes_with_only_static_members
 class _I10n {
-  static List<String> lines;
-  static File file;
+  static List<String>? lines;
+  static File? file;
   static String contents = '';
 
-  static Future<bool> init(String csvFile) async {
+  static Future<bool> init(String? csvFile) async {
     // Already been called
-    if (file != null) return true;
+    if (file != null) {
+      return true;
+    }
     // Process the parameter
-    if (csvFile == null || csvFile.trim().isEmpty) return false;
+    if (csvFile == null || csvFile.trim().isEmpty) {
+      return false;
+    }
 
     String path;
     try {
-      Directory directory;
+      Directory? directory;
       if (Platform.isIOS) {
         directory = await getApplicationDocumentsDirectory();
       } else {
         directory = await getExternalStorageDirectory();
       }
-      path = directory.path; //+ p.separator;
+      path = directory!.path; //+ p.separator;
     } catch (ex) {
-      path = "";
+      path = '';
     }
 
-    if (path.isEmpty) return false;
+    if (path.isEmpty) {
+      return false;
+    }
 
     path = p.join(path, csvFile);
 
@@ -309,15 +323,15 @@ class _I10n {
 
     bool init = true;
 
-    if (!file.existsSync()) {
+    if (!file!.existsSync()) {
       try {
-        file.createSync(recursive: true);
+        file!.createSync(recursive: true);
       } catch (ex) {
         init = false;
       }
     } else {
       try {
-        contents = await file.readAsString();
+        contents = await file!.readAsString();
       } catch (ex) {
         contents = '';
         init = false;
@@ -328,7 +342,9 @@ class _I10n {
 
   static Future<bool> dispose() async {
     bool write = contents?.trim()?.isNotEmpty ?? false;
-    if (!write) return false;
+    if (!write) {
+      return false;
+    }
     try {
       await file?.writeAsString(contents, flush: true);
       write = true;
@@ -338,51 +354,59 @@ class _I10n {
     return write;
   }
 
-  static Future<bool> add(String word) async {
-    if (word == null || word.trim().isEmpty) return false;
+  static Future<bool> add(String? word) async {
+    if (word == null || word.trim().isEmpty) {
+      return false;
+    }
     contents += '${word.trim()},\r\n';
     return true;
   }
 
-  static Future<bool> load() async {
+  static Future<bool?> load() async {
     String content;
     try {
-      content = await rootBundle.loadString(I10n.csvFile);
+      content = await rootBundle.loadString(I10n.csvFile!);
       lines = content.split('\r\n');
     } catch (ex) {
       lines = [];
     }
 
-    if (lines.isEmpty) return false;
+    if (lines!.isEmpty) {
+      return false;
+    }
 
-    bool load = generate(() {
+    final bool? load = generate(() {
       // Remove any blank lines.
-      lines.removeWhere((line) => line.isEmpty);
+      lines!.removeWhere((line) => line.isEmpty);
 
-      if (lines.isEmpty) {
-        logError("File is empty:\n ${I10n._csvFile}");
+      if (lines!.isEmpty) {
+        logError('File is empty:\n ${I10n._csvFile}');
         return lines;
       }
       return lines;
-    }, (List<Map<String, String>> maps, List<String> languages) {
+    }, (List<Map<String, String>>? maps, List<String> languages) {
       I10n?._locales = languages;
 
       I10n?._allValues?.clear();
 
       I10n?._allValues = {};
 
-      Map<String, String> map;
+      Map<String, String>? map;
       String lang;
 
       // Assume the first code is the 'default' language. The rest are the translations.
-      List<String> supportedLanguages = languages.sublist(1, languages.length);
+      final List<String> supportedLanguages =
+          languages.sublist(1, languages.length);
 
       for (var index = 0; index < supportedLanguages.length; index++) {
         lang = supportedLanguages[index];
 
-        map = maps[index];
+        map = maps![index];
 
-        if (map == null) break;
+        // ignore: unnecessary_null_comparison
+        if (map == null) {
+          break;
+        }
 
         I10n?._allValues?.addAll({lang: map});
       }
@@ -392,31 +416,34 @@ class _I10n {
     return load;
   }
 
-  static bool generate(fileFunc, collectFunc) {
+  static bool? generate(Function fileFunc, Function collectFunc) {
     final List<String> lines = fileFunc();
 
-    if (lines.isEmpty) return false;
+    if (lines.isEmpty) {
+      return false;
+    }
 
     // Get the language codes.
     final List<String> languages = getLineOfWords(lines.first);
 
-    Iterable<String> invalid = languages.where((code) {
+    final Iterable<String> invalid = languages.where((code) {
       final length = code.trim().length;
       return length != 2 && length != 3 && length != 5;
     });
 
     if (invalid.isNotEmpty) {
-      logError("Not valid language code(s):\n $invalid");
+      logError('Not valid language code(s):\n $invalid');
       return false;
     }
 
     // Assume the first code is the 'default' language. The rest are the translations.
-    List<String> supportedLanguages = languages.sublist(1, languages.length);
+    final List<String> supportedLanguages = languages.sublist(1, languages.length);
 
     final List<Map<String, String>> maps = [];
 
     // Add a Map object the List with every Language.
-    supportedLanguages.forEach((_) => maps.add(Map()));
+    // ignore: avoid_function_literals_in_foreach_calls
+    supportedLanguages.forEach((_) => maps.add({}));
 
     List<String> lineOfWords;
     String key;
@@ -431,7 +458,7 @@ class _I10n {
 
       if (RESERVED_WORDS.contains(key)) {
         logError(
-            "$key is a reserved keyword and cannot be used as key (line ${linesIndex + 1})");
+            '$key is a reserved keyword and cannot be used as key (line ${linesIndex + 1})');
         continue;
       }
 
@@ -440,22 +467,23 @@ class _I10n {
 
       if (words.length != supportedLanguages.length) {
         logError(
-            "The line number ${linesIndex + 1} seems malformatted (${words.length} words for ${supportedLanguages.length} columns)");
+            'The line number ${linesIndex + 1} seems malformatted (${words.length} words for ${supportedLanguages.length} columns)');
       }
 
       for (var wordIndex = 0; wordIndex < words.length; wordIndex++) {
         noWord = words[wordIndex].isEmpty;
         maps[wordIndex][key] = noWord ? key : words[wordIndex];
-        if (noWord)
+        if (noWord) {
           logError(
-              "The line number ${linesIndex + 1} had no word and so key was used: $key");
+              'The line number ${linesIndex + 1} had no word and so key was used: $key');
+        }
       }
     }
     // Collect the values from the maps
     return collectFunc(maps, languages);
   }
 
-  static List<String> getLineOfWords(String line) => CsvToListConverter()
+  static List<String> getLineOfWords(String line) => const CsvToListConverter()
       .convert(line)
       .first
       .map((element) => element.toString())
@@ -492,7 +520,8 @@ class _I10n {
 //    return file;
 //  }
 
-  static void logError(String text) => print("[I10n ERROR] $text\r\n");
+  // ignore: avoid_print
+  static void logError(String text) => print('[I10n ERROR] $text\r\n');
 }
 
 /// The I10n package's locale delegate
@@ -500,26 +529,28 @@ class _I10n {
 class I10nDelegate extends LocalizationsDelegate<I10n> {
   // No need for more than one instance.
   factory I10nDelegate() => _this ??= I10nDelegate._();
-  static I10nDelegate _this;
   I10nDelegate._();
+  static I10nDelegate? _this;
 
-  static Locale _locale;
+  static Locale? _locale;
   static bool _reload = false;
 
   @override
   bool isSupported(Locale locale) {
+    final _locales = I10n._locales;
     // If 'I10n._locale == null' then you're loading the app's locale.
     if (I10n._locale == null) {
       I10n._locale = locale;
 
-      if (I10n._locales == null || I10n._locales.isEmpty) {
+      if (_locales == null || _locales.isEmpty) {
         I10n._locales = [locale.toLanguageTag()];
-      } else if (!I10n._locales.contains(locale.toLanguageTag())) {
-        I10n._locales.add(locale.languageCode);
+      } else if (!_locales.contains(locale.toLanguageTag())) {
+        _locales.add(locale.languageCode);
+        I10n._locales = _locales;
       }
       _locale ??= locale;
     }
-    return I10n._locales.contains(locale.toLanguageTag());
+    return _locales?.contains(locale.toLanguageTag()) ?? false;
   }
 
   @override
@@ -533,7 +564,9 @@ class I10nDelegate extends LocalizationsDelegate<I10n> {
   @override
   bool shouldReload(I10nDelegate old) {
     bool reload = _reload;
-    if (!reload) reload = this != old;
+    if (!reload) {
+      reload = this != old;
+    }
     _reload = false;
     return reload;
   }

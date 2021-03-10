@@ -1,3 +1,8 @@
+
+## 2.0.0
+March 09, 2021
+- Null Safety 2.12.0
+
 ## 1.3.0+1
 October 08, 2020
 - Included more documentation. 

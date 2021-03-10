@@ -10,13 +10,13 @@ import 'package:prefs/prefs.dart' show Prefs;
 
 import 'package:i10n_translator/i10n.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key key}):super(key: key);
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
+  Widget build(BuildContext context) => FutureBuilder<bool>(
       future: init(),
       initialData: false,
       builder: (_, snapshot) {
@@ -36,24 +36,23 @@ class MyApp extends StatelessWidget {
                 supportedLocales: I10n.supportedLocales,
                 localeListResolutionCallback:
                     (List<Locale> locales, Iterable<Locale> supportedLocales) {
-                  String locale = Prefs.getString('locale');
+                  final String locale = Prefs.getString('locale');
                   return locale.isEmpty ? locales.first : Locale(locale);
                 },
-                home: MyHomePage(title: 'Flutter Demo Home Page'))
-            : Center(child: const CircularProgressIndicator());
+                home: const MyHomePage(title: 'Flutter Demo Home Page'))
+            : const Center(child: CircularProgressIndicator());
       },
     );
-  }
 
   Future<bool> init() async {
     // Initialize the library packages
     await Prefs.init();
-    return I10n.init();
+    return I10n.initAsync();
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  const MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -64,6 +63,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter;
 
+  @override
   void initState() {
     super.initState();
     _counter = Prefs.getInt('counter');
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.display1,
+              style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
@@ -127,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  @override
   void dispose() {
     Prefs.dispose();
     super.dispose();

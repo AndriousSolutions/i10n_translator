@@ -22,53 +22,61 @@ library i10n_translator;
 ///          Created  06 Oct 2019
 ///
 ///
-import 'dart:io' show File, FileMode;
+import 'dart:io' show File;
 
 import 'package:csv/csv.dart' show CsvToListConverter;
 
+/// Loads translations from a file into memory
 class I10nTranslator {
-  void generate([String filePath, String targetPath]) {
-    if (filePath == null || filePath.trim().isEmpty) filePath = "i10n.csv";
+  void generate([String? filePath, String? targetPath]) {
+    if (filePath == null || filePath.trim().isEmpty) {
+      filePath = 'i10n.csv';
+    }
 
-    if (targetPath == null || targetPath.trim().isEmpty)
-      targetPath = "i10n_words.dart";
+    if (targetPath == null || targetPath.trim().isEmpty) {
+      targetPath = 'i10n_words.dart';
+    }
 
-    File file = File(filePath);
+    final File file = File(filePath);
 
     if (!file.existsSync()) {
-      logError("File $filePath does not exist");
+      logError('File $filePath does not exist');
       return;
     }
 
-    List<String> lines = file.readAsLinesSync();
+    final List<String> lines = file.readAsLinesSync();
 
     // Remove any blank lines.
     lines.removeWhere((line) => line.isEmpty);
 
     if (lines.isEmpty) {
-      logError("File is empty:\n $filePath");
+      logError('File is empty:\n $filePath');
       return;
     }
 
     // Get the language codes.
-    List<String> languages = _getLineOfWords(lines.first);
+    final List<String> languages = _getLineOfWords(lines.first);
 
-    Iterable<String> invalid = languages.where((code) {
+    final Iterable<String> invalid = languages.where((code) {
       return code.trim().length != 2;
     });
 
     if (invalid.isNotEmpty) {
-      logError("Not valid language code(s):\n $invalid");
+      logError('Not valid language code(s):\n $invalid');
       return;
     }
 
     // Assume the first code is the 'default' language. The rest are the translations.
-    List<String> supportedLanguages = languages.sublist(1, languages.length);
+    final List<String> supportedLanguages =
+        languages.sublist(1, languages.length);
 
-    List<Map<String, String>> maps = [];
+    final List<Map<String, String>> maps = [];
 
     // Add a Map object the List with every Language.
-    supportedLanguages.forEach((_) => maps.add(Map()));
+    // ignore: unused_local_variable
+    for (final lang in supportedLanguages) {
+      maps.add({});
+    }
 
     List<String> lineOfWords;
     String key;
@@ -84,7 +92,7 @@ class I10nTranslator {
 
       if (RESERVED_WORDS.contains(key)) {
         logError(
-            "$key is a reserved keyword and cannot be used as key (line ${linesIndex + 1})");
+            '$key is a reserved keyword and cannot be used as key (line ${linesIndex + 1})');
         continue;
       }
 
@@ -93,15 +101,16 @@ class I10nTranslator {
 
       if (words.length != supportedLanguages.length) {
         logError(
-            "The line number ${linesIndex + 1} seems malformatted (${words.length} words for ${supportedLanguages.length} columns)");
+            'The line number ${linesIndex + 1} seems malformatted (${words.length} words for ${supportedLanguages.length} columns)');
       }
 
       for (var wordIndex = 0; wordIndex < words.length; wordIndex++) {
         noWord = words[wordIndex].isEmpty;
         maps[wordIndex][key] = noWord ? key : words[wordIndex];
-        if (noWord)
+        if (noWord) {
           logError(
-              "The line number ${linesIndex + 1} had no word and so key was used: $key");
+              'The line number ${linesIndex + 1} had no word and so key was used: $key');
+        }
       }
     }
 
@@ -110,7 +119,7 @@ class I10nTranslator {
     _writeInFile(translations, targetPath);
   }
 
-  List<String> _getLineOfWords(String line) => CsvToListConverter()
+  List<String> _getLineOfWords(String line) => const CsvToListConverter()
       .convert(line)
       .first
       .map((element) => element.toString())
@@ -118,10 +127,10 @@ class I10nTranslator {
 
   String _makeTranslations(
       List<Map<String, String>> maps, List<String> supportedLanguages) {
-    final Map<String, Map<String, String>> allValuesMap = Map();
+    final Map<String, Map<String, String>> allValuesMap = {};
     final List<String> mapsNames = [];
 
-    String result = "";
+    String result = '';
     String lang;
     Map<String, String> map;
     String mapName;
@@ -131,120 +140,125 @@ class I10nTranslator {
 
       map = maps[index];
 
-      mapName = "${lang}Values";
+      mapName = '${lang}Values';
 
       mapsNames.add(mapName);
 
-      result += """
+      // ignore: use_string_buffers
+      result += '''
       \nMap<String, String> $mapName = {
-      """;
+      ''';
 
       map.forEach((key, value) {
-        result += """
+        result += '''
         "$key": "${_formatString(value)}",
-        """;
+        ''';
       });
 
-      result += "};\n";
+      // ignore: use_string_buffers
+      result += '};\n';
 
       allValuesMap[lang] = map;
     }
 
-    result += """
+    result += '''
     \nMap<String, Map<String, String>> i10nWords = {
-    """;
+    ''';
 
     supportedLanguages.asMap().forEach((index, lang) {
-      result += """
+      result += '''
         "$lang": ${mapsNames[index]},
-      """;
+      ''';
     });
 
-    result += "};\n";
+    result += '};\n';
 
-    result = """
-   /// This class is generated by library package, I18nTranslator
+    result =
+        // ignore: leading_newlines_in_multiline_strings
+        '''   /// This class is generated by library package, I18nTranslator
    \n
-    """ +
-        result;
+    $result''';
 
     return result;
   }
 
   String _formatString(String text) {
+    // ignore: use_raw_strings
     text = text.replaceAll('"', '\\"');
 
+    // ignore: use_raw_strings
     text = text.replaceAll('\$', '\\\$');
 
     return text;
   }
 
   bool _writeInFile(String content, String file) {
-    if (content == null) return false;
-
-    if (file == null) return false;
-
     content = content.trim();
 
-    if (content.isEmpty) return false;
+    if (content.isEmpty) {
+      return false;
+    }
 
     file = file.trim();
 
-    if (file.isEmpty) return false;
+    if (file.isEmpty) {
+      return false;
+    }
 
     final File generatedFile = File(file);
 
     bool write = true;
     try {
       generatedFile.createSync(recursive: true);
-      generatedFile.writeAsStringSync(content, mode: FileMode.write);
+      generatedFile.writeAsStringSync(content);
     } catch (ex) {
       write = false;
     }
     return write;
   }
 
-  static void logError(String text) => print("[I10N ERROR] $text\r\n");
+  // ignore: avoid_print
+  static void logError(String text) => print('[I10N ERROR] $text\r\n');
 }
 
 void main(List<String> arguments) {
   final translator = I10nTranslator();
-  translator.generate(arguments.length == 0 ? null : arguments.first,
+  translator.generate(arguments.isEmpty ? null : arguments.first,
       arguments.length == 2 ? arguments[1] : null);
 }
 
 const List<String> RESERVED_WORDS = [
-  "assert",
-  "default",
-  "finally",
-  "rethrow",
-  "try",
-  "break",
-  "do",
-  "for",
-  "return",
-  "var",
-  "case",
-  "else",
-  "if",
-  "super",
-  "void",
-  "catch",
-  "enum",
-  "in",
-  "switch",
-  "while",
-  "class",
-  "extends",
-  "is",
-  "this",
-  "with",
-  "const",
-  "false",
-  "new",
-  "throw",
-  "continue",
-  "final",
-  "null",
-  "true",
+  'assert',
+  'default',
+  'finally',
+  'rethrow',
+  'try',
+  'break',
+  'do',
+  'for',
+  'return',
+  'var',
+  'case',
+  'else',
+  'if',
+  'super',
+  'void',
+  'catch',
+  'enum',
+  'in',
+  'switch',
+  'while',
+  'class',
+  'extends',
+  'is',
+  'this',
+  'with',
+  'const',
+  'false',
+  'new',
+  'throw',
+  'continue',
+  'final',
+  'null',
+  'true',
 ];

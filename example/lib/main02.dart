@@ -10,13 +10,14 @@ import 'package:i10n_translator/i10n.dart';
 
 import 'i10n_words.dart' show i10nWords;
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key key}):super(key: key);
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    I10n.init(map: i10nWords);
+    I10n.initAsync(map: i10nWords);
     return MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
@@ -34,12 +35,12 @@ class MyApp extends StatelessWidget {
             (List<Locale> locales, Iterable<Locale> supportedLocales) {
           return locales.first;
         },
-        home: MyHomePage(title: 'Flutter Demo Home Page'));
+        home: const MyHomePage(title: 'Flutter Demo Home Page'));
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  const MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
 
@@ -50,6 +51,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  @override
   void initState() {
     super.initState();
   }
@@ -78,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.display1,
+              style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
