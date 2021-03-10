@@ -1,4 +1,8 @@
 
+## 2.0.1
+March 09, 2021
+- Corrected semantic versioning
+
 ## 2.0.0+5-nullsafety.0
 March 09, 2021
 - Null Safety 2.12.0
