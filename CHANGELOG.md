@@ -1,4 +1,8 @@
 
+## 2.0.2
+March 10, 2021
+- I10n cannot be null replacing '?.' with '.'
+
 ## 2.0.1
 March 09, 2021
 - Corrected semantic versioning

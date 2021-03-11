@@ -341,7 +341,7 @@ class _I10n {
   }
 
   static Future<bool> dispose() async {
-    bool write = contents?.trim()?.isNotEmpty ?? false;
+    bool write = contents.trim().isNotEmpty; // ?? false;
     if (!write) {
       return false;
     }
@@ -385,11 +385,11 @@ class _I10n {
       }
       return lines;
     }, (List<Map<String, String>>? maps, List<String> languages) {
-      I10n?._locales = languages;
+      I10n._locales = languages;
 
-      I10n?._allValues?.clear();
+      I10n._allValues?.clear();
 
-      I10n?._allValues = {};
+      I10n._allValues = {};
 
       Map<String, String>? map;
       String lang;
@@ -408,7 +408,7 @@ class _I10n {
           break;
         }
 
-        I10n?._allValues?.addAll({lang: map});
+        I10n._allValues?.addAll({lang: map});
       }
       return true;
     });
