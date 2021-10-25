@@ -23,10 +23,10 @@ library i10n_translator;
 ///
 ///
 import 'dart:async' show Future;
-
 import 'dart:io' show Directory, File, Platform;
-
 import 'dart:ui' as ui show TextHeightBehavior;
+
+import 'package:csv/csv.dart' show CsvToListConverter;
 
 import 'package:flutter/material.dart'
     show
@@ -43,14 +43,14 @@ import 'package:flutter/material.dart'
 
 import 'package:flutter/services.dart' show rootBundle;
 
-import 'package:csv/csv.dart' show CsvToListConverter;
+import 'package:i10n_translator/src/i10n_translator.dart' show RESERVED_WORDS;
 
 import 'package:path/path.dart' as p;
 
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory, getExternalStorageDirectory;
 
-import 'package:i10n_translator/src/i10n_translator.dart' show RESERVED_WORDS;
+import 'package:prefs/prefs.dart';
 
 /// Main I10n class to incorporate text translations into a mobile app.
 class I10n {
@@ -58,10 +58,12 @@ class I10n {
   I10n._();
   static I10n? _this;
 
+  static final String kDefaultCSV = p.join('assets', 'i10n', 'i10n.csv');
+
   static String? _csvFile;
   static String? get csvFile {
     if (_csvFile == null || _csvFile!.isEmpty) {
-      _csvFile = p.join('assets', 'i10n', 'i10n.csv');
+      _csvFile = kDefaultCSV;
     }
     return _csvFile;
   }
@@ -109,14 +111,21 @@ class I10n {
     bool? init = true;
 
     if (_allValues == null || _allValues!.isEmpty) {
+      //
       if (_csvFile != null && _csvFile!.isNotEmpty) {
         // Open a csv file to place in entries.
         await _I10n.init(p.basename(_csvFile!));
       }
       try {
-        // Open an asset if any to read in the entries.
-        // ignore: avoid_as
-        init = await (_I10n.load() as Future<bool>);
+        // Create the 'default' csv file for the developer.
+        if (I10n.csvFile == kDefaultCSV) {
+          init = await _I10n.create(I10n.csvFile);
+        }
+        if (init) {
+          // Open an asset if any to read in the entries.
+          // ignore: avoid_as
+          init = await _I10n.load();
+        }
       } catch (ex) {
         init = false;
       }
@@ -169,6 +178,59 @@ class I10n {
     _localizedValues = _useKey ? {} : _allValues![code!];
 
     return Future.value(I10n());
+  }
+
+  static Locale? localeListResolutionCallback(
+      List<Locale>? locales, Iterable<Locale>? supportedLocales) {
+    Locale? locale;
+
+    locales ??= [toLocale(Prefs.getString('locale'))!];
+
+    supportedLocales ??= supportedLocales!.take(I10n.supportedLocales!.length);
+
+    // Use the device's locale.
+    if (locales != null && locales.isNotEmpty) {
+      locale = locales.first;
+    } else if (supportedLocales.isNotEmpty) {
+      // Use the first supported locale.
+      locale = supportedLocales.first;
+    }
+    return locale;
+  }
+
+  static Future<void> onSelectedItemChanged(int index) async {
+    final locale = getLocale(index);
+    if (locale != null) {
+      await Prefs.setString('locale', locale.toLanguageTag());
+    }
+  }
+
+  static Locale? getLocale(int index) {
+    Locale? locale;
+    final localesList = I10n.supportedLocales;
+    if (localesList != null) {
+      locale = localesList[index];
+    }
+    return locale;
+  }
+
+  static Locale? toLocale(String? _locale) {
+    Locale? locale;
+
+    if (_locale != null && _locale.isNotEmpty) {
+      //
+      final localeCode = _locale.split('-');
+      String languageCode;
+      String? countryCode;
+      if (localeCode.length == 2) {
+        languageCode = localeCode.first;
+        countryCode = localeCode.last;
+      } else {
+        languageCode = localeCode.first;
+      }
+      locale = Locale(languageCode, countryCode);
+    }
+    return locale;
   }
 
   /// Convert a Text object to one with a translation.
@@ -239,9 +301,9 @@ class I10n {
 
   /// Translate the String
   static String s(String? key) {
-    // While developing, return 'null' when appropriate
-    // Add key words to a file if not yet found there.
-    // assert is removed in production.
+    /// While developing, return 'null' when appropriate
+    /// Add key words to a file if not yet found there.
+    /// assert is removed in production.
     assert(() {
       if (key == null) {
         key = 'null';
@@ -354,6 +416,45 @@ class _I10n {
     return write;
   }
 
+  static Future<bool> create(String? csvFile) async {
+    // Process the parameter
+    if (csvFile == null || csvFile.trim().isEmpty) {
+      return false;
+    }
+
+    String path;
+    try {
+      Directory? directory;
+      if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
+      } else {
+        directory = await getExternalStorageDirectory();
+      }
+      path = directory!.path;
+    } catch (ex) {
+      path = '';
+    }
+
+    if (path.isEmpty) {
+      return false;
+    }
+
+    path = p.join(path, csvFile);
+
+    final file = File(path);
+
+    bool created = true;
+
+    if (!file.existsSync()) {
+      try {
+        file.createSync(recursive: true);
+      } catch (ex) {
+        created = false;
+      }
+    }
+    return created;
+  }
+
   static Future<bool> add(String? word) async {
     if (word == null || word.trim().isEmpty) {
       return false;
@@ -437,7 +538,8 @@ class _I10n {
     }
 
     // Assume the first code is the 'default' language. The rest are the translations.
-    final List<String> supportedLanguages = languages.sublist(1, languages.length);
+    final List<String> supportedLanguages =
+        languages.sublist(1, languages.length);
 
     final List<Map<String, String>> maps = [];
 

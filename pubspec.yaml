@@ -1,7 +1,7 @@
 name: i10n_translator
 description: Allows you to easily provide translations of your local text to other supported languages.
 
-version: 2.0.2
+version: 2.1.0
 
 homepage: https://github.com/AndriousSolutions/i10n_translator
 repository: https://github.com/AndriousSolutions/i10n_translator
@@ -13,14 +13,18 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # https://pub.dev/packages/csv
+  csv: ^5.0.0
+
 # https://pub.dev/packages/path
-  path: ^1.8.0
+  path: ^1.0.0
 
 # https://pub.dev/packages/path_provider
-  path_provider: ^2.0.1
+  path_provider: ^2.0.0
 
-# https://pub.dev/packages/csv
-  csv: ^5.0.0-nullsafety.0
+# https://pub.dartlang.org/packages/prefs
+  prefs: ^3.0.0
+  #  path: ../../packages/prefs
 
 dev_dependencies:
   flutter_test:

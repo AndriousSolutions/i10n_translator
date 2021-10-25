@@ -1,4 +1,9 @@
 
+## 2.1.0
+October 24, 2021
+- csv: ^5.0.0
+- static Locale? localeListResolutionCallback(List<Locale>? locales, Iterable<Locale>? supportedLocales) {
+
 ## 2.0.2
 March 10, 2021
 - I10n cannot be null replacing '?.' with '.'
