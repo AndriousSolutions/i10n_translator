@@ -192,7 +192,16 @@ class I10nTranslator {
     return text;
   }
 
-  bool _writeInFile(String content, String file) {
+  bool _writeInFile(String? content, String? file) {
+    //
+    if (content == null) {
+      return false;
+    }
+
+    if (file == null) {
+      return false;
+    }
+
     content = content.trim();
 
     if (content.isEmpty) {

@@ -44,6 +44,7 @@
 /.project
 /.metadata
 /bin/**
+!/bin/i10n_translator.dart
 /tmp/**
 /tmp/**/*
 /*.tmp
@@ -55,7 +56,7 @@
 /.settings/
 /.loadpath
 
-                                        a
+
 # Miscellaneous
 #*.lock
 *.class
