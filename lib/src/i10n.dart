@@ -122,9 +122,14 @@ class I10n {
           init = await _I10n.create(I10n.csvFile);
         }
         if (init) {
-          // Open an asset if any to read in the entries.
-          // ignore: avoid_as
+          //
           init = await _I10n.load();
+
+          final _locale = I10n.appLocale;
+
+          if (_locale != null) {
+            await I10n.load(_locale);
+          }
         }
       } catch (ex) {
         init = false;
@@ -184,9 +189,10 @@ class I10n {
       List<Locale>? locales, Iterable<Locale>? supportedLocales) {
     Locale? locale;
 
-    locales ??= [toLocale(Prefs.getString('locale'))!];
+    locales ??= [appLocale!];
 
-    supportedLocales ??= supportedLocales!.take(I10n.supportedLocales!.length);
+    supportedLocales ??=
+        I10n.supportedLocales!.take(I10n.supportedLocales!.length);
 
     // Use the device's locale.
     if (locales != null && locales.isNotEmpty) {
@@ -204,6 +210,9 @@ class I10n {
       await Prefs.setString('locale', locale.toLanguageTag());
     }
   }
+
+  /// Return the preferred Locale
+  static Locale? get appLocale => toLocale(Prefs.getString('locale', 'en-US'));
 
   static Locale? getLocale(int index) {
     Locale? locale;

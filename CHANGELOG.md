@@ -1,4 +1,8 @@
 
+## 2.1.1
+October 24, 2021
+- I10n.supportedLocales!.take(I10n.supportedLocales!.length);
+
 ## 2.1.0
 October 24, 2021
 - csv: ^5.0.0
