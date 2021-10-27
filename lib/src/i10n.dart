@@ -185,21 +185,24 @@ class I10n {
     return Future.value(I10n());
   }
 
-  static Locale? localeListResolutionCallback(
-      List<Locale>? locales, Iterable<Locale>? supportedLocales) {
-    Locale? locale;
+  static Locale? localeResolutionCallback(
+      Locale? locale, Iterable<Locale>? supportedLocales) {
+    //
+    final _appLocale = appLocale;
 
-    locales ??= [appLocale!];
+    // Override the system's preferred locale with the app's preferred locale.
+    if (_appLocale != null) {
+      locale = _appLocale;
+    }
 
-    supportedLocales ??=
-        I10n.supportedLocales!.take(I10n.supportedLocales!.length);
-
-    // Use the device's locale.
-    if (locales != null && locales.isNotEmpty) {
-      locale = locales.first;
-    } else if (supportedLocales.isNotEmpty) {
-      // Use the first supported locale.
-      locale = supportedLocales.first;
+    if (locale == null) {
+      // Retrieve the 'first' locale in the supported locales.
+      supportedLocales ??=
+          I10n.supportedLocales!.take(I10n.supportedLocales!.length);
+      if (supportedLocales.isNotEmpty) {
+        // Use the first supported locale.
+        locale = supportedLocales.first;
+      }
     }
     return locale;
   }

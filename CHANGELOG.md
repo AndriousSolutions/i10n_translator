@@ -1,4 +1,8 @@
 
+## 2.2.0
+October 26, 2021
+- static Locale? localeResolutionCallback(
+
 ## 2.1.1
 October 24, 2021
 - I10n.supportedLocales!.take(I10n.supportedLocales!.length);
