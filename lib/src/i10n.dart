@@ -23,11 +23,10 @@ library i10n_translator;
 ///
 ///
 import 'dart:async' show Future;
-import 'dart:io' show Directory, File, Platform;
+import 'dart:io' show Directory, File;
 import 'dart:ui' as ui show TextHeightBehavior;
 
 import 'package:csv/csv.dart' show CsvToListConverter;
-
 import 'package:flutter/material.dart'
     show
         Key,
@@ -40,17 +39,14 @@ import 'package:flutter/material.dart'
         TextOverflow,
         TextStyle,
         TextWidthBasis;
-
 import 'package:flutter/services.dart' show rootBundle;
-
 import 'package:i10n_translator/src/i10n_translator.dart' show RESERVED_WORDS;
-
 import 'package:path/path.dart' as p;
-
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory, getExternalStorageDirectory;
-
 import 'package:prefs/prefs.dart';
+import 'package:universal_platform/universal_platform.dart'
+    show UniversalPlatform;
 
 /// Main I10n class to incorporate text translations into a mobile app.
 class I10n {
@@ -111,8 +107,10 @@ class I10n {
     bool? init = true;
 
     if (_allValues == null || _allValues!.isEmpty) {
-      //
-      if (_csvFile != null && _csvFile!.isNotEmpty) {
+      // Can't open a text file on the Web
+      if (_csvFile != null &&
+          _csvFile!.isNotEmpty &&
+          !UniversalPlatform.isWeb) {
         // Open a csv file to place in entries.
         await _I10n.init(p.basename(_csvFile!));
       }
@@ -121,7 +119,9 @@ class I10n {
         if (I10n.csvFile == kDefaultCSV) {
           init = await _I10n.create(I10n.csvFile);
         }
-        if (init) {
+
+        // Attempt to load the file
+        if (init || UniversalPlatform.isWeb) {
           //
           init = await _I10n.load();
 
@@ -172,7 +172,7 @@ class I10n {
     if (_allValues == null) {
       // No means to get the translations.
       _useKey = true;
-      _locales ??= ['en'];
+      _locales ??= ['en-US'];
     } else {
       code = _allValues!.keys.firstWhere(
           (code) => code.toString() == localString,
@@ -220,7 +220,7 @@ class I10n {
   static Locale? getLocale(int index) {
     Locale? locale;
     final localesList = I10n.supportedLocales;
-    if (localesList != null) {
+    if (localesList != null && index >= 0) {
       locale = localesList[index];
     }
     return locale;
@@ -377,9 +377,11 @@ class _I10n {
     String path;
     try {
       Directory? directory;
-      if (Platform.isIOS) {
+      if (UniversalPlatform.isIOS) {
+        //
         directory = await getApplicationDocumentsDirectory();
-      } else {
+      } else if (UniversalPlatform.isAndroid) {
+        //
         directory = await getExternalStorageDirectory();
       }
       path = directory!.path; //+ p.separator;
@@ -430,16 +432,18 @@ class _I10n {
 
   static Future<bool> create(String? csvFile) async {
     // Process the parameter
-    if (csvFile == null || csvFile.trim().isEmpty) {
+    if (csvFile == null || csvFile.trim().isEmpty || UniversalPlatform.isWeb) {
       return false;
     }
 
     String path;
     try {
       Directory? directory;
-      if (Platform.isIOS) {
+      if (UniversalPlatform.isIOS) {
+        //
         directory = await getApplicationDocumentsDirectory();
-      } else {
+      } else if (UniversalPlatform.isAndroid) {
+        //
         directory = await getExternalStorageDirectory();
       }
       path = directory!.path;

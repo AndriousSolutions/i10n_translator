@@ -1,4 +1,9 @@
 
+## 2.2.1
+November 12, 2021
+- _locales ??= ['en-US'];
+- universal_platform:
+
 ## 2.2.0
 October 26, 2021
 - static Locale? localeResolutionCallback(
